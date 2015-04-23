@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="20" height="10" tilewidth="64" tileheight="64" nextobjectid="10">
+ <tileset firstgid="1" name="example_tileset" tilewidth="64" tileheight="64">
+  <image source="example_tileset.png" width="128" height="128"/>
+ </tileset>
+ <layer name="Background" width="20" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AU4AIAAyAAAQ==
+  </data>
+ </layer>
+ <layer name="Level" width="20" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBi8gJmKZjFC8XAzD5c+RjRMrBnEmgeMmwUwOWY8ZhBr3mDFAM0wAO4=
+  </data>
+ </layer>
+ <objectgroup name="CollisionMap">
+  <object id="1" x="-1" y="512" width="1282" height="129"/>
+  <object id="2" x="0" y="383" width="127" height="132"/>
+  <object id="3" x="384" y="447" width="127" height="67"/>
+  <object id="4" x="576" y="383" width="126" height="133"/>
+  <object id="5" x="767" y="319" width="129" height="198"/>
+  <object id="6" x="1152" y="127" width="130" height="386"/>
+  <object id="7" x="127" y="447">
+   <polygon points="0,0 65,65 0,65"/>
+  </object>
+  <object id="8" x="319.333" y="511.333">
+   <polygon points="0,0 64.6667,-64 64.6667,0.666667"/>
+  </object>
+  <object id="9" x="1216.67" y="127.333">
+   <polygon points="0,0 62.6667,-64 62,0"/>
+  </object>
+ </objectgroup>
+</map>
