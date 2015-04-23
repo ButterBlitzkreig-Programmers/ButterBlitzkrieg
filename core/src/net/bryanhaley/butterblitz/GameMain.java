@@ -4,12 +4,10 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.TimeUtils;
 
 /* Entry point (sort-of) for the game. Might use nasty code and bad practices to keep things simple
  * and get this out in-time.
@@ -20,8 +18,8 @@ public class GameMain extends ApplicationAdapter
 	private SpriteBatch batch; // Sends all images to be rendered at once;
 								// opengl/opengl es likes it this way
 	private OrthographicCamera camera; // manages scaling and coordinates
-	public static final int RESOLUTION_WIDTH = 256, RESOLUTION_HEIGHT = 244;
-	// internal resolution
+	// internal resolution; 16:9 version of SNES resolution
+	public static final int RESOLUTION_WIDTH = 434, RESOLUTION_HEIGHT = 244;
 	private World world; // Box2D world
 	private Level level; // Tiled level
 	private Box2DDebugRenderer debugRenderer;
