@@ -7,6 +7,7 @@ import net.bryanhaley.butterblitz.GameMain;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		config.width = 768; config.height = 732;
 		new LwjglApplication(new GameMain(), config);
 	}
 }
