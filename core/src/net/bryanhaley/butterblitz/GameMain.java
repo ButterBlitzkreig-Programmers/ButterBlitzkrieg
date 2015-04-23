@@ -2,9 +2,11 @@ package net.bryanhaley.butterblitz;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
@@ -18,8 +20,8 @@ public class GameMain extends ApplicationAdapter
 	private SpriteBatch batch; // Sends all images to be rendered at once;
 								// opengl/opengl es likes it this way
 	private OrthographicCamera camera; // manages scaling and coordinates
-	// internal resolution; 16:9 version of SNES resolution
-	public static final int RESOLUTION_WIDTH = 434, RESOLUTION_HEIGHT = 244;
+	// internal resolution; 16:9 version of SNES resolution, 434x244
+	public static final int RESOLUTION_WIDTH = 1280, RESOLUTION_HEIGHT = 720;
 	private World world; // Box2D world
 	private Level level; // Tiled level
 	private Box2DDebugRenderer debugRenderer;
@@ -32,12 +34,12 @@ public class GameMain extends ApplicationAdapter
 
 		// create 2D camera. Using common SNES resolution since we
 		// agreed on 16 bit style art, but we can change this later.
-		camera = new OrthographicCamera();
-		camera.setToOrtho(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
-		camera.update(); // this finalizes any changes to the camera
+		camera = new OrthographicCamera(RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+		//camera.setToOrtho(false, RESOLUTION_WIDTH, RESOLUTION_HEIGHT);
+		camera.update(); // this updates any changes to the camera
 
 		/*--temporary test--*/
-		camera.position.set(256, 192, 0);
+		camera.position.set(camera.viewportWidth * 0.5f, camera.viewportHeight * 0.5f, 0);
 		camera.update();
 		/*--temporary test--*/
 
@@ -45,12 +47,10 @@ public class GameMain extends ApplicationAdapter
 		world = new World(new Vector2(0, -10), true); // create world with normal
 													  // gravity
 		
-		debugRenderer = new Box2DDebugRenderer();
+		debugRenderer = new Box2DDebugRenderer(true,true,true,true,true,true);
 
 		// Initialize level. Making it static is nasty but saves some time.
-		level = new Level();
-		
-		level.addCollisionObjects(world);
+		level = new Level(world);
 		
 		Gdx.app.log("Num collision objects in box2d world", ""+world.getBodyCount());
 	}
@@ -59,9 +59,6 @@ public class GameMain extends ApplicationAdapter
 	public void update()
 	{
 		level.update();
-		
-		//render box2d bodies for debug purposes
-		debugRenderer.render(world, camera.combined);
 		
 		//not gonna bother with a proper timestep since it's just a level demo
 		//upate Box2D interactions
@@ -87,8 +84,22 @@ public class GameMain extends ApplicationAdapter
 		// render all sprites between begin and end
 		batch.begin();
 		
+		//render box2d bodies for debug purposes
+		if (Gdx.input.isKeyPressed(Keys.P))
+		{
+			Matrix4 scaledCamera = new Matrix4(camera.combined);
+			scaledCamera.scale(Level.METERS_TO_PIXELS, Level.METERS_TO_PIXELS, Level.METERS_TO_PIXELS);
+			debugRenderer.render(world, scaledCamera);
+		}
 		
+		level.renderObjects(batch);
 		
 		batch.end();
+	}
+	
+	public void dispose()
+	{
+		world.dispose();
+		level.dispose();
 	}
 }
