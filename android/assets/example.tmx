@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="20" height="10" tilewidth="64" tileheight="64" nextobjectid="20">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="20" height="10" tilewidth="64" tileheight="64" nextobjectid="23">
  <tileset firstgid="1" name="tileset" tilewidth="64" tileheight="64">
   <image source="example_tileset.png" width="128" height="128"/>
  </tileset>
  <tileset firstgid="5" name="player" tilewidth="64" tileheight="64">
   <image source="example_player.png" width="64" height="64"/>
+ </tileset>
+ <tileset firstgid="6" name="example_enemy" tilewidth="32" tileheight="32">
+  <image source="example_enemy.png" width="32" height="32"/>
  </tileset>
  <layer name="Background" width="20" height="10">
   <data encoding="base64" compression="zlib">
@@ -24,7 +27,8 @@
    <polyline points="0,0 128,0 128,64 192,128 320,128 384,64 512,64 512,128 576,128 576,0 704,0 704,64 768,64 768,-64 896,-64 896,0 960,0 960,64 1024,64 1024,128 1152,128 1152,-256 1216,-256 1280,-320 1280,-384 0,-384 0,0"/>
   </object>
  </objectgroup>
- <objectgroup name="GameObjs">
-  <object id="11" name="playerspawn" gid="5" x="412" y="392"/>
+ <objectgroup name="Entities">
+  <object id="11" name="player_spawn" type="player_spawn" gid="5" x="33" y="333"/>
+  <object id="22" name="example_enemy" type="example_enemy" gid="6" x="832" y="305"/>
  </objectgroup>
 </map>

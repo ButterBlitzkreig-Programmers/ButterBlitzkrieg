@@ -20,7 +20,7 @@ public class GameMain extends ApplicationAdapter
 	private SpriteBatch batch; // Sends all images to be rendered at once;
 								// opengl/opengl es likes it this way
 	private OrthographicCamera camera; // manages scaling and coordinates
-	// internal resolution; 16:9 version of SNES resolution, 434x244
+	// internal resolution; 720p HD. Could be changed.
 	public static final int RESOLUTION_WIDTH = 1280, RESOLUTION_HEIGHT = 720;
 	private World world; // Box2D world
 	private Level level; // Tiled level
@@ -46,13 +46,13 @@ public class GameMain extends ApplicationAdapter
 		// Initialize Box2D
 		world = new World(new Vector2(0, -10), true); // create world with normal
 													  // gravity
+		world.setContactListener(new GameObjCollision()); // See GameObjCollision class
 		
+		//Debug renderer for vieweing collision objects
 		debugRenderer = new Box2DDebugRenderer(true,true,true,true,true,true);
 
-		// Initialize level. Making it static is nasty but saves some time.
+		// Initialize level.
 		level = new Level(world);
-		
-		Gdx.app.log("Num collision objects in box2d world", ""+world.getBodyCount());
 	}
 
 	// increment all actions and interactions; test for collisions

@@ -7,68 +7,43 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 /* Everything here is temporary, just wanted to get a workable demo to show the group. */
 
 public class Player extends GameObject
 {
-	private World world;
-	private boolean isOnGround;
+	private int health;
+	//GUI stuff. Maybe put this in Level later?
+	private TextureRegion healthText, healthOrb;
 
 	public Player(World world)
 	{
-		super(world, "example_player.png", new Rectangle(500, 500, 43, 64));
-		this.world = world;
+		this(world, new Vector2(500,500));
 	}
-
-	public void create(World world, String img, Rectangle collisionBox)
+	
+	public Player(World world, Vector2 position)
 	{
-		tex = new TextureRegion(new Texture(Gdx.files.internal(img)));
-		this.width = tex.getRegionWidth();
-		this.height = tex.getRegionHeight();
-
-		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyType.DynamicBody;
-		bodyDef.position.set(collisionBox.x * Level.PIXELS_TO_METERS, collisionBox.y * Level.PIXELS_TO_METERS);
-
-		Body body = world.createBody(bodyDef);
-
-		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(collisionBox.width / 2 * Level.PIXELS_TO_METERS, collisionBox.height / 2
-				* Level.PIXELS_TO_METERS);
-
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = shape;
-		fixtureDef.friction = 0f;
-		fixtureDef.density = 1f;
-
-		body.createFixture(fixtureDef);
-
-		shape.dispose();
-
-		this.body = body;
-
-		originX = 0;
-		originY = 0;
-		scaleX = 1;
-		scaleY = 1;
-		rotation = 0;
+		super(world, "example_player.png", new Rectangle(position.x,position.y,43,64));
+		
+		healthText = new TextureRegion(new Texture("example_health_text.png"));
+		healthOrb = new TextureRegion(new Texture("example_health.png"));
+		health = 3;
+		
+		//Player is updated and rendered at a specific time, so we don't want it in
+		//the same list as every other game object
+		Level.gameObjs.remove(this);
 	}
 
 	public void update()
 	{
-		findIsOnGround();
+		super.update(); //check for collisions
+		
+		//keep the body vertical
 		body.setAngularVelocity(0);
 		body.setTransform(body.getPosition(), 0);
 
+		/* Temporary movement stuff, change later */
 		if (isOnGround)
 		{
 			body.setLinearDamping(2);
@@ -87,48 +62,55 @@ public class Player extends GameObject
 			body.setLinearVelocity(new Vector2(-15, body.getLinearVelocity().y));
 		}
 
-		if (Gdx.input.isKeyJustPressed(Keys.SPACE) && isOnGround)
+		if (Gdx.input.isKeyJustPressed(Keys.SPACE) && findIsOnGround())
 		{
-			body.setLinearVelocity(new Vector2(0, 17));
+			body.setLinearVelocity(new Vector2(body.getLinearVelocity().x, 17));
 		}
-	}
-
-	private void findIsOnGround()
-	{
-		isOnGround = false;
-
-		RayCastCallback callback = new RayCastCallback()
-		{
-			@Override
-			public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction)
-			{
-				Gdx.app.log("Body Y pos", "" + body.getPosition().y * Level.METERS_TO_PIXELS);
-				Gdx.app.log("Collision Point", point.x * Level.METERS_TO_PIXELS + "x" + point.y
-						* Level.METERS_TO_PIXELS);
-				if (body.getPosition().y - point.y < 40 * Level.PIXELS_TO_METERS)
-				{
-					isOnGround = true;
-					Gdx.app.log("Is on ground", "true");
-				}
-				return 0;
-			}
-		};
-
-		Vector2 point1 = new Vector2(body.getPosition().x, body.getPosition().y
-				+ ((height / 2) * Level.PIXELS_TO_METERS));
-		Vector2 point2 = new Vector2(point1.x, -200);
-
-		world.rayCast(callback, point1, point2);
-
-		point1 = point1.set(body.getPosition().x + (30 * Level.PIXELS_TO_METERS), point1.y);
-		point2 = point2.set(point1.x, point2.y);
-
-		world.rayCast(callback, point1, point2);
 	}
 
 	public void render(SpriteBatch batch)
 	{
+		//Draw the image
 		batch.draw(tex, body.getPosition().x * Level.METERS_TO_PIXELS - (width / 2) + 10, body.getPosition().y
 				* Level.METERS_TO_PIXELS - (height / 2), width / 2, height / 2, width, height, scaleX, scaleY, 0);
+		
+		//Draw GUI stuff. Move to Level later?
+		batch.draw(healthText, 3, 704);
+		
+		switch (health)
+		{
+			case 3: batch.draw(healthOrb, 97, 704);
+			case 2: batch.draw(healthOrb, 81, 704);
+			case 1: batch.draw(healthOrb, 65, 704);
+		}
+	}
+	
+	protected void checkCollision(GameObject collision)
+	{
+		//If we hit an example enemy, take 1 damage
+		if (collision instanceof Enemy)
+		{
+			damage();
+		}
+	}
+	
+	public void damage()
+	{
+		health--;
+	}
+	
+	public void damage(int damage)
+	{
+		health -= damage;
+	}
+	
+	public void heal()
+	{
+		health++;
+	}
+	
+	public void heal(int heal)
+	{
+		health += heal;
 	}
 }
