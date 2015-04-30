@@ -11,11 +11,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
 /* Every non-level object is a gameobject. Game Objects have an image,
  * and a box2d body. Every gameobject can be created, updated,
@@ -29,6 +31,7 @@ public class GameObject
 	protected float width, height, originX, originY, scaleX, scaleY, rotation;
 	protected ArrayList<GameObject> collidingWith; //list of objects this is currently colliding with
 	protected boolean isOnGround;
+	protected World world;
 	
 	public GameObject() { }
 	
@@ -43,20 +46,17 @@ public class GameObject
 		this.create(world, tex, collisionBox);
 	}
 	
-	public GameObject(TextureRegion tex, Body body)
+	public GameObject(World world, TextureRegion tex, Body body)
 	{
-		this.create(tex, body);
+		this.create(world, tex, body);
 	}
 	
 	//Create the box2D body
 	public void create(World world, TextureRegion tex, Rectangle collisionBox)
 	{
-		this.width = tex.getRegionWidth();
-		this.height = tex.getRegionHeight();
-		
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
-		bodyDef.position.set(collisionBox.x*Level.PIXELS_TO_METERS, collisionBox.y*Level.PIXELS_TO_METERS);
+		bodyDef.position.set((collisionBox.x+(collisionBox.width/2))*Level.PIXELS_TO_METERS, (collisionBox.y+(collisionBox.height/2))*Level.PIXELS_TO_METERS);
 		
 		Body body = world.createBody(bodyDef);
 		
@@ -73,19 +73,24 @@ public class GameObject
 		
 		shape.dispose();
 		
-		this.create(tex, body);
+		this.create(world, tex, body);
 	}
 	
-	public void create(TextureRegion tex, Body body)
+	public void create(World world, TextureRegion tex, Body body)
 	{
 		this.tex = tex;
 		this.body = body;
+		
+		this.width = tex.getRegionWidth();
+		this.height = tex.getRegionHeight();
 		
 		originX = 0; originY = 0;
 		scaleX = 1; scaleY = 1;
 		rotation = 0;
 		
 		collidingWith = new ArrayList<GameObject>();
+		
+		this.world = world;
 		
 		// Add self to list of GameObjects in Level
 		Level.gameObjs.add(this);
@@ -101,14 +106,7 @@ public class GameObject
 	}
 	
 	//Behavior in response to collisions goes in this method
-	protected void checkCollision(GameObject collision)
-	{
-		if (collision instanceof Player && !(this instanceof Player))
-		{
-			Gdx.app.log("Collision Report", "This object '" + this.toString() +
-						"' is colliding with the player.");
-		}
-	}
+	protected void checkCollision(GameObject collision) { }
 	
 	public void render(SpriteBatch batch)
 	{
@@ -129,10 +127,30 @@ public class GameObject
 		collidingWith.remove(obj);
 	}
 	
+	
+	public boolean findIsOnGround()
+	{
+		Array<Contact> contactList = world.getContactList();
+		
+		for (Contact contact : contactList)
+		{
+			if (contact.isTouching() && (contact.getFixtureA() == body.getFixtureList().get(0) ||
+					contact.getFixtureB() == body.getFixtureList().get(0)))
+			{
+				isOnGround = true;
+				return true;
+			}
+		}
+		
+		isOnGround = false;
+		return false;
+	}
+	
 	//Ray trace to find if the object is on the ground (not 100% accurate)
 	//Note that the origin of Box2D bodies are in the center, not the bottom left corner
-	protected boolean findIsOnGround()
+	protected boolean findIsOnGroundRayTrace()
 	{
+		//this acts strange, replaced it with something more simple
 		isOnGround = false;
 		
 		World world = body.getWorld();
@@ -157,13 +175,13 @@ public class GameObject
 		};
 
 		//Raycast from the bottom corners of the object downwards
-		Vector2 point1 = new Vector2(body.getPosition().x - ((width/2-2)*Level.PIXELS_TO_METERS), body.getPosition().y);
+		Vector2 point1 = new Vector2(body.getPosition().x - ((width/2)*Level.PIXELS_TO_METERS), body.getPosition().y);
 		Vector2 point2 = new Vector2(point1.x, -200);
 
 		world.rayCast(callback, point1, point2);
 
-		point1 = point1.set(body.getPosition().x + ((width/2-2) * Level.PIXELS_TO_METERS), point1.y);
-		point2 = point2.set(point1.x, point2.y);
+		point1.set(body.getPosition().x + ((width/2) * Level.PIXELS_TO_METERS), point1.y);
+		point2.set(point1.x, -200);
 
 		world.rayCast(callback, point1, point2);
 		
@@ -175,8 +193,20 @@ public class GameObject
 	public Vector2 getPositionPixels()
 	{
 		Vector2 newPos = new Vector2(body.getPosition());
+		newPos.set((newPos.x*Level.METERS_TO_PIXELS)-(width/2), (newPos.y*Level.METERS_TO_PIXELS)-(height/2));
+		return newPos;
+	}
+	
+	public Vector2 getPositionPixelsCentered()
+	{
+		Vector2 newPos = new Vector2(body.getPosition());
 		newPos.set(newPos.x*Level.METERS_TO_PIXELS, newPos.y*Level.METERS_TO_PIXELS);
 		return newPos;
+	}
+	
+	public Body getBody()
+	{
+		return body;
 	}
 	
 	public Vector2 getPositionMeters()

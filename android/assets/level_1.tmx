@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="250" height="25" tilewidth="32" tileheight="32" nextobjectid="210">
+ <tileset firstgid="1" name="tmw_desert_spacing" tilewidth="32" tileheight="32">
+  <image source="tmw_desert_spacing.png" width="256" height="192"/>
+ </tileset>
+ <tileset firstgid="49" name="RUIN" tilewidth="32" tileheight="32">
+  <image source="RUIN.png" width="640" height="480"/>
+ </tileset>
+ <tileset firstgid="349" name="VILINT" tilewidth="32" tileheight="32">
+  <image source="VILINT.png" width="640" height="480"/>
+ </tileset>
+ <tileset firstgid="649" name="KITCHEN" tilewidth="32" tileheight="32">
+  <image source="KITCHEN.png" width="640" height="480"/>
+ </tileset>
+ <layer name="Background" width="250" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzt07ENACAMA0GU/VdkFwpaWoRw7iT3bn4MAAAAAAAAAAAAoKOq1w+AmzQO2TQO2TQO2TTOyaw9/qdxyKZxyKZxAAAAAAAAgF4WFMUB3w==
+  </data>
+ </layer>
+ <layer name="Level 1" width="250" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzt2sFNwzAUBuC4x95ZgGGYoodswIkROHQEFqA70Ctc6bWtxAawA4kSq69WnmMntp+d/Ei/aBw7ONH76iZlW1XVFkEQBEEQBEGQ7LPZlB+f88r1GlxUfpGuTQTO4RzOkXjOX1WawLl8pGsTWZ5zrOd55S2D2iwhP5tb9qoLbZuSF9XFbBt6Tftz8anxq7oFzv3nNdTGrZu0faiPy5qLNbps5zbbsZxf1b11OF/Hmj41uv6kDZbonBpP6Vzb1tv43D6ceuY5wHmZCel8zLKv889mfl/9PFM9V4tpPZXzx8otcA7nOTg/N/O7eNZ47PUczuV9wrl/qOs5zttjhXb+2xzzb6LzHBPbuatvOF+f81DrOXVumnd1bpuntFE4h/OSM9W5OXaOc5d5ShvN2bmvbzhfj3P9E9u57mc6p+Nd5vve9Dv0NXbIwCx9ti8dOF+G86H/O4mRuc4589Q5/Yzuc50/mn7HvsaOGdgyv8czHeTsW2etzvfqvtala8mMpHOb6xTOv5t+p77GTkLXn7rmnOtamvM3uMB5WOexPeUW+v6Wo/O59exa22P9tTW9j9pr6yfkPFMEzsdd2PbXlv3c2HaMOS7Vew7n3LQI53BemnN9rhclf//tmtD2qUd9XM42nMM5HSvtd8nO94aPqZ83OKtwvi7nU74zaMeF8FdHNr0053Tb5/4azuGcc342zuWs3J3TcaH6+KZ059rE0D302LMFOO+ys8S1P7dP2q1vroanofe9Ket5rD6c46Wt56Zr6p57fgbncD52LWzn6dKWqo+e9zOJ3q7J/pqEjpH265od+b1jtm1tD+o+Y23c67Ft2ziz/cnhvP8Ba44EdQ==
+  </data>
+ </layer>
+ <objectgroup name="CollisionMap">
+  <properties>
+   <property name="object" value=""/>
+  </properties>
+  <object id="112" type="object" x="32" y="96">
+   <polyline points="0,0 0,480 576,480 576,704 800,704 800,480 960,480 960,704 1120,704 1120,480 1184,480 1184,704 1312,704 1312,480 2208,480 2208,416 2272,416 2272,352 2336,352 2336,288 2400,288 2400,224 2720,224 2720,704 2784,704 2784,672 2752,672 2752,640 2848,640 2848,672 2816,672 2816,704 2976,704 2976,640 2944,640 2944,608 3040,608 3040,640 3008,640 3008,704 3136,704 3136,576 3104,576 3104,544 3200,544 3200,576 3168,576 3168,704 3424,704 3424,640 3392,640 3392,608 3488,608 3488,640 3456,640 3456,704 3712,704 3712,640 3680,640 3680,608 3776,608 3776,640 3744,640 3744,704 4000,704 4000,640 3968,640 3968,608 4384,608 4384,576 4448,576 4448,704 4544,704 4544,512 4608,512 4608,704 4640,704 4640,512 5984,512 5984,704 6016,704 6016,544 6048,544 6048,704 6144,704 6144,576 6176,576 6176,704 6304,704 6304,640 6336,640 6336,704 6464,704 6464,576 6496,576 6496,704 6624,704 6624,512 6656,512 6656,704 6784,704 6784,512 6816,512 6816,704 6880,704 6880,480 6912,480 6912,704 6976,704 6976,416 7008,416 7008,704 7104,704 7104,320 7136,320 7136,704 7232,704 7232,256 7264,256 7264,704 7328,704 7328,288 7360,288 7360,704 7424,704 7424,352 7456,352 7456,704 7616,704 7616,352 7648,352 7648,704 7712,704 7712,320 7776,320 7776,288 7968,288 7968,96 6656,96 6656,352 6592,352 6592,384 5920,384 5920,416 4832,416 4832,160 3968,160 3968,128 4320,128 4320,0 2080,0 2080,384 1920,384 1920,0 1728,0 1728,384 1568,384 1568,0 0,0"/>
+  </object>
+  <object id="201" type="object" x="2816" y="224" width="96" height="32"/>
+  <object id="203" type="object" x="2976" y="224" width="96" height="32"/>
+  <object id="204" type="object" x="3136" y="224" width="128" height="32"/>
+  <object id="205" type="object" x="3424" y="224" width="96" height="32"/>
+  <object id="206" type="object" x="3616" y="224" width="192" height="32"/>
+  <object id="209" type="object" x="3328" y="224" width="32" height="32"/>
+ </objectgroup>
+ <objectgroup name="Entities">
+  <properties>
+   <property name="example_enemy" value=""/>
+  </properties>
+  <object id="108" type="player_spawn" gid="678" x="268" y="470.667"/>
+  <object id="110" type="health_pickup" gid="678" x="4160" y="192"/>
+  <object id="118" type="example_enemy" gid="678" x="2016" y="544"/>
+  <object id="119" type="example_enemy" gid="678" x="1664" y="544"/>
+  <object id="136" name="example" type="changelevel" x="7969" y="352">
+   <properties>
+    <property name="load" value="example"/>
+   </properties>
+  </object>
+  <object id="198" type="killzone" x="608" y="736" width="736" height="64"/>
+  <object id="199" type="killzone" x="2752" y="768" width="4992" height="32"/>
+  <object id="208" type="example_enemy" gid="678" x="2816" y="704"/>
+ </objectgroup>
+</map>

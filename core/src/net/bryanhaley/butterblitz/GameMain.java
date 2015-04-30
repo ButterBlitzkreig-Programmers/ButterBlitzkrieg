@@ -44,7 +44,7 @@ public class GameMain extends ApplicationAdapter
 		/*--temporary test--*/
 
 		// Initialize Box2D
-		world = new World(new Vector2(0, -10), true); // create world with normal
+		world = new World(new Vector2(0, -50), true); // create world with normal
 													  // gravity
 		world.setContactListener(new GameObjCollision()); // See GameObjCollision class
 		
@@ -52,13 +52,17 @@ public class GameMain extends ApplicationAdapter
 		debugRenderer = new Box2DDebugRenderer(true,true,true,true,true,true);
 
 		// Initialize level.
-		level = new Level(world);
+		level = new Level(world, camera);
 	}
 
 	// increment all actions and interactions; test for collisions
 	public void update()
 	{
 		level.update();
+		
+		camera.position.set(level.getPlayer().getPositionPixelsCentered().x,
+				level.getPlayer().getPositionPixelsCentered().y, 0);
+		camera.update();
 		
 		//not gonna bother with a proper timestep since it's just a level demo
 		//upate Box2D interactions

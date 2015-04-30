@@ -38,7 +38,7 @@ public class Enemy extends GameObject
 		
 		if (distanceFromPlayer < 140 && findIsOnGround())
 		{
-			body.setLinearVelocity(new Vector2(body.getLinearVelocity().x, 10));
+			body.setLinearVelocity(new Vector2(body.getLinearVelocity().x, 30));
 		}
 	}
 	
