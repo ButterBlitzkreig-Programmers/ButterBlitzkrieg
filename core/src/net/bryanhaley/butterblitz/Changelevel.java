@@ -22,6 +22,8 @@ public class Changelevel extends GameObject
 	
 	public void create(World world, Level level, String newLevel, Rectangle rectangle)
 	{
+		Gdx.app.log("Position", rectangle.x+"x"+rectangle.y);
+		
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.position.set((rectangle.x+(rectangle.width/2))*Level.PIXELS_TO_METERS, (rectangle.y+(rectangle.height/2))*Level.PIXELS_TO_METERS);
 		bodyDef.type = BodyType.KinematicBody;

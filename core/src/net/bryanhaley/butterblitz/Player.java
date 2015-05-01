@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
@@ -26,6 +27,7 @@ public class Player extends GameObject
 {
 	private int health;
 	private Enemy lastEnemyHit;
+	private boolean facingLeft;
 
 	public Player(World world)
 	{
@@ -34,7 +36,7 @@ public class Player extends GameObject
 
 	public Player(World world, Vector2 position)
 	{
-		// super(world, "example_player.png", new Rectangle(position.x,position.y,43,64));
+		Gdx.app.log("Position", position.x+"x"+position.y);
 
 		tex = new TextureRegion(new Texture(Gdx.files.internal("example_player.png")));
 		this.width = 43;
@@ -108,6 +110,24 @@ public class Player extends GameObject
 			jumpVelocity *= 1.3f;
 		}
 		
+		if (Gdx.input.isKeyJustPressed(Keys.F))
+		{
+			if (!facingLeft)
+			{
+				new Projectile(world, "example_pop.png",
+								new Vector3(this.getPositionPixelsCentered().x+22,
+											this.getPositionPixelsCentered().y+16,8),
+								new Vector3(body.getLinearVelocity().x+50,10, (float) Math.toRadians(-10)));
+			}
+			else
+			{
+				new Projectile(world, "example_pop.png",
+								new Vector3(this.getPositionPixelsCentered().x-22,
+											this.getPositionPixelsCentered().y+16,8),
+								new Vector3(body.getLinearVelocity().x+-50,10, (float) Math.toRadians(190)));
+			}
+		}
+		
 		if (isOnGround)
 		{
 			if (Gdx.input.isKeyPressed(Keys.D))
@@ -118,6 +138,8 @@ public class Player extends GameObject
 				}
 				
 				body.applyLinearImpulse(new Vector2(moveForce,0), body.getPosition(), true);
+				
+				facingLeft = false;
 			}
 			else if (Gdx.input.isKeyPressed(Keys.A))
 			{
@@ -127,6 +149,8 @@ public class Player extends GameObject
 				}
 				
 				body.applyLinearImpulse(new Vector2(-moveForce,0), body.getPosition(), true);
+				
+				facingLeft = true;
 			}
 			
 			if (Gdx.input.isKeyPressed(Keys.SPACE))
@@ -163,8 +187,6 @@ public class Player extends GameObject
 			for (Fixture fixture : body.getFixtureList())
 			{ fixture.setFriction(100f); }
 		}*/
-		
-		Gdx.app.log("Player is on ground?",""+isOnGround);
 	}
 	
 	public boolean findIsOnGround()
@@ -189,13 +211,18 @@ public class Player extends GameObject
 	public void render(SpriteBatch batch)
 	{
 		// Draw the image
+		
+		if (facingLeft)
+		{ scaleX = -1; }
+		else
+		{ scaleX = 1; }
+		
 		batch.draw(tex, body.getPosition().x * Level.METERS_TO_PIXELS - (width / 2), body.getPosition().y
 				* Level.METERS_TO_PIXELS - (height / 2), width / 2, height / 2, tex.getRegionWidth(), tex.getRegionHeight(), scaleX, scaleY, 0);
 	}
 
 	protected void checkCollision(GameObject collision)
 	{
-		Gdx.app.log("check collision", "called");
 		// If we hit an example enemy, take 1 damage
 		if (collision instanceof Enemy && !collision.equals(lastEnemyHit))
 		{

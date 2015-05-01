@@ -32,6 +32,7 @@ public class GameObject
 	protected ArrayList<GameObject> collidingWith; //list of objects this is currently colliding with
 	protected boolean isOnGround;
 	protected World world;
+	protected boolean markedForDestruction;
 	
 	public GameObject() { }
 	
@@ -217,7 +218,8 @@ public class GameObject
 	//Add this object to a list of objects to be destroyed.
 	public void destroy()
 	{
-		Level.destroyObject(this);
+		markedForDestruction = true;
+		//Level.destroyObject(this);
 	}
 	
 	//Need an asset manager, will implement soon

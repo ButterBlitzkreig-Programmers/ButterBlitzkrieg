@@ -28,8 +28,8 @@ public class Level
 	private OrthogonalTiledMapRenderer renderer; // renders the level tiles
 	private World world; // reference to world created in GameMain
 	public static final float PIXELS_TO_METERS = 0.15625f, METERS_TO_PIXELS = 6.4f;
-	public static ArrayList<GameObject> gameObjs; //List of all gameobjects in the level
-	private static ArrayList<GameObject> destroy; //List of objects to be destroyed
+	public static ArrayList<GameObject> gameObjs; // List of all gameobjects in the level
+	private static ArrayList<GameObject> destroy; // List of objects to be destroyed
 	private OrthographicCamera camera;
 	private Player player;
 	private TextureRegion healthText, healthOrb;
@@ -54,11 +54,11 @@ public class Level
 		map = new TmxMapLoader().load(tilemap);
 		renderer = new OrthogonalTiledMapRenderer(map, 1);
 		this.world = boxWorld;
-		
+
 		healthText = new TextureRegion(new Texture("example_health_text.png"));
 		healthOrb = new TextureRegion(new Texture("example_health.png"));
-		
-		//These are static because only one level will exist at a time and it's easier to access them this way
+
+		// These are static because only one level will exist at a time and it's easier to access them this way
 		gameObjs = new ArrayList<GameObject>();
 		destroy = new ArrayList<GameObject>();
 
@@ -69,162 +69,198 @@ public class Level
 		parser.load(world, map);
 
 		// report number of collision objects found for debug purposes
-		Gdx.app.log("Num Map Objects", "" + map.getLayers().get("CollisionMap").getObjects().getCount());
-		
+		Gdx.app.log("Number of objects in layer CollisionMap", "" + map.getLayers().get("CollisionMap").getObjects().getCount());
+
 		this.camera = camera;
 
-		//Find and create objects recorded on the Entities layer of the map
+		// Find and create objects recorded on the Entities layer of the map
 		interpretMapEntities();
+		
+		if (player == null)
+		{
+			Gdx.app.log("ERROR", "No player_spawn entity found!");
+			player = new Player(world, new Vector2(128,128));
+		}
+		
+		Gdx.app.log("Map "+mapName+" loaded", "-----------------------\n\n");
 	}
-	
+
 	public void interpretMapEntities()
 	{
 		MapObjects mapObjects = map.getLayers().get("Entities").getObjects();
 		
-		//Find the type, which defines what object the entity is, then find the position
-		//and any other data necessary to create the object.
+		Gdx.app.log("Number of objects in layer Entities", ""+mapObjects.getCount());
+
+		// Find the type, which defines what object the entity is, then find the position
+		// and any other data necessary to create the object.
 		for (MapObject object : mapObjects)
 		{
-			//create the player
+			// create the player
 			if (((String) object.getProperties().get("type", String.class)).equals("player_spawn"))
 			{
 				Gdx.app.log("Player", "created");
-				player = new Player(world, new Vector2(
-						object.getProperties().get("x", float.class),
-						object.getProperties().get("y", float.class)));
+				player = new Player(world, new Vector2(object.getProperties().get("x", float.class), object
+						.getProperties().get("y", float.class)));
 			}
-			
-			//create the example enemy
+
+			// create the example enemy
 			if (((String) object.getProperties().get("type", String.class)).equals("example_enemy"))
 			{
 				Gdx.app.log("Enemy", "created");
-				new Enemy(world, player, "example_enemy.png", new Rectangle(object.getProperties().get("x", float.class),
-																			object.getProperties().get("y", float.class),
-																			32, 32));
+				new Enemy(world, player, "example_enemy.png", new Rectangle(object.getProperties()
+						.get("x", float.class), object.getProperties().get("y", float.class), 32, 32));
 			}
-			
+
 			if (((String) object.getProperties().get("type", String.class)).equals("killzone"))
 			{
 				Gdx.app.log("Killzone", "created");
-				new Killzone(world, new Rectangle(object.getProperties().get("x", float.class), object.getProperties().get("y", float.class),
-									object.getProperties().get("width", float.class), object.getProperties().get("height", float.class)));
+				new Killzone(world, new Rectangle(object.getProperties().get("x", float.class), object.getProperties()
+						.get("y", float.class), object.getProperties().get("width", float.class), object
+						.getProperties().get("height", float.class)));
 			}
-			
+
 			if (((String) object.getProperties().get("type", String.class)).equals("changelevel"))
 			{
 				Gdx.app.log("Changelevel trigger", "created");
-				new Changelevel(world, this, object.getProperties().get("load", String.class)+".tmx", new Rectangle(object.getProperties().get("x", float.class), object.getProperties().get("y", float.class),
-									object.getProperties().get("width", float.class), object.getProperties().get("height", float.class)));
+				new Changelevel(world, this, object.getProperties().get("load", String.class) + ".tmx", new Rectangle(
+						object.getProperties().get("x", float.class), object.getProperties().get("y", float.class),
+						object.getProperties().get("width", float.class), object.getProperties().get("height",
+								float.class)));
 			}
 		}
 	}
 
 	public void update()
 	{
-		//always update the player first
+		// always update the player first
 		player.update();
-		
-		//update all game objects
+
+		// update all game objects
 		for (GameObject gameObject : gameObjs)
 		{
 			gameObject.update();
 		}
-		
-		//remove game objects that need to be destroyed.
-		//we can't do that from inside the prior for loop, so keep a list of objects to be destroyed
-		//and destroy them here
-		for (GameObject destructObj : destroy)
-		{
-			gameObjs.remove(destructObj);
-			
-			if (destructObj.isOnGround)
-			{ destructObj.getBody().setTransform(new Vector2(-5000,-5000), 0); }
-			
-			else
-			{
-				world.destroyBody(destructObj.getBody());
-				destroy.remove(this);
-			}
-		}
-		
-		//clear the list of destroyed objects. The garbage collector and asset manager should handle
-		//things from here.
-		//destroy.clear();
-		
+
+		// clear the list of destroyed objects. The garbage collector and asset manager should handle
+		// things from here.
+		// destroy.clear();
+
 		if (player.getHealth() <= 0)
 		{
 			reset();
 		}
-		
+
 		if (!nextMap.equals(mapName))
 		{
 			this.loadNewMap(nextMap);
 		}
 	}
 
-	//render the level
+	public void destroyBodies()
+	{
+		Array<Body> bodies = new Array<Body>();
+		world.getBodies(bodies);
+		
+		for (Body body : bodies)
+		{
+			GameObject destructObj = (GameObject) body.getUserData();
+			if (destructObj != null && destructObj.markedForDestruction)
+			{
+				gameObjs.remove(destructObj);
+				world.destroyBody(destructObj.getBody());
+			}
+		}
+		
+		
+		// remove game objects that need to be destroyed.
+		// we can't do that from inside the prior for loop, so keep a list of objects to be destroyed
+		// and destroy them here
+		/*for (GameObject destructObj : destroy)
+		{
+			gameObjs.remove(destructObj);
+
+			if (destructObj.isOnGround)
+			{
+				destructObj.getBody().setAwake(true);
+				destructObj.getBody().setTransform(new Vector2(-5000, -5000), 0);
+			}
+
+			else
+			{
+				world.destroyBody(destructObj.getBody());
+				//destroy.remove(this);
+			//}
+		}
+		
+		destroy.clear();*/
+	}
+
+	// render the level
 	public void render(OrthographicCamera camera)
 	{
 		renderer.setView(camera);
 		renderer.render();
 	}
-	
-	//render object in the level
+
+	// render object in the level
 	public void renderObjects(SpriteBatch batch)
 	{
 		for (GameObject gameObject : gameObjs)
 		{
 			gameObject.render(batch);
 		}
-		
-		//always render the player & GUI stuff last so that the player is always on top
+
+		// always render the player & GUI stuff last so that the player is always on top
 		player.render(batch);
-		
-		Vector2 guiZero = new Vector2(camera.position.x-(camera.viewportWidth/2), camera.position.y-(camera.viewportHeight/2));
-		
-		batch.draw(healthText, guiZero.x+3, guiZero.y+704);
+
+		Vector2 guiZero = new Vector2(camera.position.x - (camera.viewportWidth / 2), camera.position.y
+				- (camera.viewportHeight / 2));
+
+		batch.draw(healthText, guiZero.x + 3, guiZero.y + 704);
 
 		switch (player.getHealth())
 		{
 			case 3:
-				batch.draw(healthOrb, guiZero.x+97, guiZero.y+704);
+				batch.draw(healthOrb, guiZero.x + 97, guiZero.y + 704);
 			case 2:
-				batch.draw(healthOrb, guiZero.x+81, guiZero.y+704);
+				batch.draw(healthOrb, guiZero.x + 81, guiZero.y + 704);
 			case 1:
-				batch.draw(healthOrb, guiZero.x+65, guiZero.y+704);
+				batch.draw(healthOrb, guiZero.x + 65, guiZero.y + 704);
 		}
 	}
-	
+
 	public void reset()
 	{
 		loadNewMap(mapName);
 	}
-	
+
 	public void loadNewMap(String newMap)
 	{
-		//reset
+		// reset
 		gameObjs.clear();
 		destroy.clear();
 		map.dispose();
 		renderer.dispose();
-		
+
 		Array<Body> bodies = new Array<Body>();
 		world.getBodies(bodies);
-		
+
 		for (Body body : bodies)
-		{ world.destroyBody(body); }
-		
-		//load
+		{
+			world.destroyBody(body);
+		}
+
+		// load
 		this.mapName = newMap;
 		this.nextMap = newMap;
 		map = new TmxMapLoader().load(newMap);
-		
+
 		renderer = new OrthogonalTiledMapRenderer(map, 1);
-		
+
 		healthText = new TextureRegion(new Texture("example_health_text.png"));
 		healthOrb = new TextureRegion(new Texture("example_health.png"));
-		
-		//These are static because only one level will exist at a time and it's easier to access them this way
+
+		// These are static because only one level will exist at a time and it's easier to access them this way
 		gameObjs = new ArrayList<GameObject>();
 		destroy = new ArrayList<GameObject>();
 
@@ -237,20 +273,20 @@ public class Level
 		// report number of collision objects found for debug purposes
 		Gdx.app.log("Num Map Objects", "" + map.getLayers().get("CollisionMap").getObjects().getCount());
 
-		//Find and create objects recorded on the Entities layer of the map
+		// Find and create objects recorded on the Entities layer of the map
 		interpretMapEntities();
 	}
-	
+
 	public void setNextMap(String map)
 	{
 		this.nextMap = map;
 	}
-	
+
 	public Player getPlayer()
 	{
 		return player;
 	}
-	
+
 	public static void destroyObject(GameObject obj)
 	{
 		destroy.add(obj);
@@ -261,8 +297,8 @@ public class Level
 	{
 		return map;
 	}
-	
-	//Dispose of everything used. Need to implement the assets manager!
+
+	// Dispose of everything used. Need to implement the assets manager!
 	public void dispose()
 	{
 		map.dispose();

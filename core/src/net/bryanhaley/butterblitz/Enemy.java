@@ -1,5 +1,6 @@
 package net.bryanhaley.butterblitz;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -18,6 +19,7 @@ public class Enemy extends GameObject
 	public Enemy(World world, Player player, String img, Rectangle collision)
 	{
 		super(world, img, collision);
+		Gdx.app.log("Position", collision.x+"x"+collision.y);
 		this.player = player;
 	}
 	
@@ -48,7 +50,7 @@ public class Enemy extends GameObject
 	public void checkCollision(GameObject collision)
 	{
 		//The enemy only reacts to a collision with a player
-		if (collision instanceof Player)
+		if (collision instanceof Player || collision instanceof Projectile)
 		{
 			this.destroy();
 		}
