@@ -67,7 +67,7 @@ public class MenuScreen implements Screen
 				GameState gameState = new GameState();
 				gameState.create("-map " + mapName);
 				GameMain.switchState(gameState);
-				} catch (Exception excep) { Gdx.app.log("Loading Map " + text.getText(), "Caused an error!\n"); excep.printStackTrace(); reset();}
+				} catch (Exception excep) { Gdx.app.log("Map " + text.getText(), "Not found!\n"); reset();}
 			}
 		});
 		

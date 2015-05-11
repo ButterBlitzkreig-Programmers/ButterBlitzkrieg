@@ -37,7 +37,7 @@ public class Enemy extends GameObject
 		//This example enemy just jumps when the player gets close enough.
 		float distanceFromPlayer =
 				(float) Math.abs(player.getPositionPixels().x - this.getPositionPixels().x);
-			
+		
 		if (distanceFromPlayer < 140 && findIsOnGround())
 		{
 			body.setLinearVelocity(new Vector2(body.getLinearVelocity().x, 30));
