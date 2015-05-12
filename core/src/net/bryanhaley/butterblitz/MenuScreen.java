@@ -3,7 +3,6 @@ package net.bryanhaley.butterblitz;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -11,10 +10,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Align;
 
 public class MenuScreen implements Screen
 {
+	@SuppressWarnings("unused")
 	private Game game;
 	private Stage stage;
 	private TextButton btnStart;
@@ -34,7 +33,7 @@ public class MenuScreen implements Screen
 		text.setPosition(440, 300);
 		
 		intro = new Label("", skin);
-		intro.setAlignment(Align.center);
+		intro.setAlignment(1);
 		intro.setText("WASD to move.\n"
 					+ "Space to jump.\n"
 					+ "Control to slow-walk.\n"
@@ -67,7 +66,7 @@ public class MenuScreen implements Screen
 				GameState gameState = new GameState();
 				gameState.create("-map " + mapName);
 				GameMain.switchState(gameState);
-				} catch (Exception excep) { Gdx.app.log("Map " + text.getText(), "Not found!\n"); reset();}
+				} catch (Exception excep) { Gdx.app.log("Loading Map " + text.getText(), "Caused an error!\n"); excep.printStackTrace(); reset();}
 			}
 		});
 		

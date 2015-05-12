@@ -126,6 +126,7 @@ public class GameObject
 	public void stopCollisionWith(GameObject obj)
 	{
 		collidingWith.remove(obj);
+		//collidingWith.removeValue(obj, true);
 	}
 	
 	

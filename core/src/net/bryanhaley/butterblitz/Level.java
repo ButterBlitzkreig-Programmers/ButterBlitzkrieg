@@ -1,10 +1,9 @@
 package net.bryanhaley.butterblitz;
 
 import java.util.ArrayList;
-
 import net.dermetfan.gdx.physics.box2d.Box2DMapObjectParser;
-
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -34,6 +33,8 @@ public class Level
 	private Player player;
 	private TextureRegion healthText, healthOrb;
 	private String mapName, nextMap;
+	private boolean setReset;
+	private Music soundtrack;
 
 	// constructors; forward to create to keep them tidy
 	public Level(World world, OrthographicCamera camera)
@@ -76,12 +77,6 @@ public class Level
 		// Find and create objects recorded on the Entities layer of the map
 		interpretMapEntities();
 		
-		if (player == null)
-		{
-			Gdx.app.log("ERROR", "No player_spawn entity found!");
-			player = new Player(world, new Vector2(128,128));
-		}
-		
 		Gdx.app.log("Map "+mapName+" loaded", "-----------------------\n\n");
 	}
 
@@ -90,19 +85,28 @@ public class Level
 		MapObjects mapObjects = map.getLayers().get("Entities").getObjects();
 		
 		Gdx.app.log("Number of objects in layer Entities", ""+mapObjects.getCount());
-
-		// Find the type, which defines what object the entity is, then find the position
-		// and any other data necessary to create the object.
+		
+		//find the player and load him first
 		for (MapObject object : mapObjects)
 		{
-			// create the player
 			if (((String) object.getProperties().get("type", String.class)).equals("player_spawn"))
 			{
 				Gdx.app.log("Player", "created");
 				player = new Player(world, new Vector2(object.getProperties().get("x", float.class), object
 						.getProperties().get("y", float.class)));
 			}
-
+		}
+		
+		if (player == null)
+		{
+			Gdx.app.log("ERROR", "No player_spawn entity found!");
+			player = new Player(world, new Vector2(128,128));
+		}
+		
+		// Find the type, which defines what object the entity is, then find the position
+		// and any other data necessary to create the object.
+		for (MapObject object : mapObjects)
+		{
 			// create the example enemy
 			if (((String) object.getProperties().get("type", String.class)).equals("example_enemy"))
 			{
@@ -127,6 +131,13 @@ public class Level
 						object.getProperties().get("width", float.class), object.getProperties().get("height",
 								float.class)));
 			}
+			
+			if (((String) object.getProperties().get("type", String.class)).equals("music"))
+			{
+				soundtrack = Gdx.audio.newMusic(Gdx.files.internal("MAPS/"+object.getName()+".ogg"));
+				soundtrack.setLooping(true);
+				soundtrack.play();
+			}
 		}
 	}
 
@@ -147,7 +158,7 @@ public class Level
 
 		if (player.getHealth() <= 0)
 		{
-			reset();
+			setReset = true;
 		}
 
 		if (!nextMap.equals(mapName))
@@ -171,28 +182,18 @@ public class Level
 			}
 		}
 		
-		
-		// remove game objects that need to be destroyed.
-		// we can't do that from inside the prior for loop, so keep a list of objects to be destroyed
-		// and destroy them here
-		/*for (GameObject destructObj : destroy)
+		if (setReset)
 		{
-			gameObjs.remove(destructObj);
-
-			if (destructObj.isOnGround)
+			setReset = false; 
+			for (GameObject gameObj : gameObjs)
 			{
-				destructObj.getBody().setAwake(true);
-				destructObj.getBody().setTransform(new Vector2(-5000, -5000), 0);
+				gameObj.markedForDestruction = true;
 			}
-
-			else
-			{
-				world.destroyBody(destructObj.getBody());
-				//destroy.remove(this);
-			//}
+			
+			destroyBodies();
+			
+			loadNewMap(mapName);
 		}
-		
-		destroy.clear();*/
 	}
 
 	// render the level
@@ -249,12 +250,15 @@ public class Level
 		{
 			world.destroyBody(body);
 		}
+		
+		soundtrack.setLooping(false);
+		soundtrack.stop();
+		soundtrack.dispose();
 
 		// load
 		this.mapName = newMap;
 		this.nextMap = newMap;
 		map = new TmxMapLoader().load(newMap);
-
 		renderer = new OrthogonalTiledMapRenderer(map, 1);
 
 		healthText = new TextureRegion(new Texture("example_health_text.png"));
@@ -271,10 +275,12 @@ public class Level
 		parser.load(world, map);
 
 		// report number of collision objects found for debug purposes
-		Gdx.app.log("Num Map Objects", "" + map.getLayers().get("CollisionMap").getObjects().getCount());
+		Gdx.app.log("Number of objects in layer CollisionMap", "" + map.getLayers().get("CollisionMap").getObjects().getCount());
 
 		// Find and create objects recorded on the Entities layer of the map
 		interpretMapEntities();
+		
+		Gdx.app.log("Map "+mapName+" loaded", "-----------------------\n\n");
 	}
 
 	public void setNextMap(String map)
@@ -303,5 +309,11 @@ public class Level
 	{
 		map.dispose();
 		renderer.dispose();
+		if (soundtrack != null)
+		{
+			soundtrack.setLooping(false);
+			soundtrack.stop();
+			soundtrack.dispose();
+		}
 	}
 }

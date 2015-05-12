@@ -98,10 +98,12 @@ project(":html") {
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion:sources"
         compile "com.badlogicgames.gdx:gdx-controllers-gwt:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers-gwt:$gdxVersion:sources"
-        compile "net.dermetfan.libgdx-utils:libgdx-utils:0.10.0:sources"
-        compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.10.0:sources"
-        compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d-gwt:0.10.0:sources"
-        compile "net.dermetfan.libgdx-utils:libgdx-utils:0.10.0:sources"
+		compile "net.dermetfan.libgdx-utils:libgdx-utils:0.11.0"
+		compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.11.0"
+        compile "net.dermetfan.libgdx-utils:libgdx-utils:0.11.0:sources"
+        compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.11.0:sources"
+        compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d-gwt:0.11.0:sources"
+        compile "net.dermetfan.libgdx-utils:libgdx-utils:0.11.0:sources"
         compile "com.badlogicgames.gdx:gdx-ai:$aiVersion:sources"
     }
 }
@@ -114,8 +116,8 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
-        compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.10.0"
-        compile "net.dermetfan.libgdx-utils:libgdx-utils:0.10.0"
+        compile "net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.11.0"
+        compile "net.dermetfan.libgdx-utils:libgdx-utils:0.11.0"
         compile "com.badlogicgames.gdx:gdx-ai:$aiVersion"
     }
 }
